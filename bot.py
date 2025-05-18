@@ -6,11 +6,11 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")  # Use environment variable
 DOWNLOAD_DIR = 'downloads'
-TELEGRAM_MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
+TELEGRAM_MAX_FILE_SIZE = 100 * 1024 * 1024  # 50 MB
 YOUTUBE_COOKIES_FILE = 'cookies.txt'  # File name used in Render secret
 
 def sanitize_filename(name):
-    return re.sub(r'[<>:"/\\|?*\u200b\u202c\u202d\u202e\u202f]', '', name)[:150]
+    return re.sub(r'[<>:"/\\|?*\u200b\u202c\u202d\u202e\u202f]', '', name)[:250]
 
 def is_youtube_url(url):
     return "youtube.com" in url or "youtu.be" in url
@@ -57,7 +57,7 @@ def download_media(url: str, is_audio: bool = False):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎬 Send me a link from YouTube, Facebook, Instagram, etc.\n"
-        "🟣 To get MP3 only, start your message with `audio` or `mp3`."
+        "😉 To get .mp4 file and you also give your Heart to t.me/Arsiht_143"
     )
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -71,7 +71,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     url = url_match.group(1)
     try:
-        await update.message.reply_text("ℹ️ Fetching media info...")
+        await update.message.reply_text("ℹ️ Fetching media info...🫠")
         info = get_video_info(url)
         title = info.get('title', 'Unknown Title')
         duration = info.get('duration')
@@ -81,12 +81,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             msg += f"\n⏱️ *Duration:* {mins}:{secs:02d}"
         await update.message.reply_text(msg, parse_mode='Markdown')
 
-        await update.message.reply_text("⏳ Downloading... Please wait...")
+        await update.message.reply_text("⏳ Downloading...\n🐱 Please wait...")
         file_path, _ = download_media(url, is_audio)
         file_size = os.path.getsize(file_path)
 
         if file_size > TELEGRAM_MAX_FILE_SIZE:
-            await update.message.reply_text("⚠️ File too large to send via Telegram (50 MB limit).")
+            await update.message.reply_text("⚠️ File too large to send via Telegram (100 MB limit).")
         else:
             if is_audio:
                 await update.message.reply_audio(audio=open(file_path, 'rb'))
@@ -95,7 +95,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         os.remove(file_path)
     except Exception as e:
-        await update.message.reply_text(f"😥 Error: {str(e)}")
+        await update.message.reply_text(f"🫣: {str(e)}")
 
 if __name__ == '__main__':
     app = ApplicationBuilder().token(BOT_TOKEN).build()
